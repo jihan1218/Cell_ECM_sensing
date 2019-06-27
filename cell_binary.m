@@ -12,7 +12,7 @@ else
 end
 
 img = loadimgs([foldname,filesep,imfold,filesep,'*ch00.tif'],0,1);
-mkdir([foldname,filesep,'xyz_01_bw']);
+mkdir([foldname,filesep,imfold,filesep,'BW']);
 bw_stack = zeros(1024,1024,length(img(1,1,:)));
 
 for i = 1:length(img(1,1,:))
@@ -21,7 +21,7 @@ for i = 1:length(img(1,1,:))
     imfilt = medfilt2(im_adjust);
     bw = imbinarize(imfilt);
     I = im2uint8(bw);
-    imwrite(I,[foldname,filesep,'xyz_01_bw',filesep,sprintf('xyz_%02d.tif',i)]);
+    imwrite(I,[foldname,filesep,imfold,filesep,'BW',filesep,sprintf('xyz_%02d.tif',i)]);
     bw_stack (:,:,i) = I;
     
 end
@@ -39,7 +39,8 @@ count = 0;
 r = 4;
 
 % to add a point: press 1, to finish adding a point: press 2
-
+allcells = [foldname,filesep,imfold,filesep,'cellnumber'];
+mkdir(allcells);
 while(breaker)
     
     check = getkey;
@@ -58,7 +59,7 @@ while(breaker)
         
     elseif check == 50
         breaker = 0;
-        saveas(gcf,[foldname,filesep,'xyz' num2str(1) '.jpeg']); 
+        saveas(gcf,[allcells,filesep,'xyz' num2str(1) '.jpeg']); 
         close(100)
     end
     
@@ -69,9 +70,10 @@ end
 count1 = 0;
 zmin = 3;
 zprof = [];
+cellfold = [foldname,filesep,imfold,filesep,'single_cell'];
+mkdir(cellfold);
 
-
-for i = 1:1 %length(coordinate(:,1))
+for i = 1:length(coordinate(:,1))
     
     center = coordinate(i,:);
 %     circle = sqrt((xmap-center(1)).^2+(ymap-center(2)).^2);
@@ -83,7 +85,7 @@ for i = 1:1 %length(coordinate(:,1))
     ztemp = find(bwz > 0);
     l = length(ztemp);
     
-    if ztemp(1)+floor(l/2)> zmin
+    if ztemp(1)+floor(l/2) > zmin && ztemp(l)-floor(l/2) < length(bwz) -zmin 
         zprof(i,1) = i;
         zprof(i,2:3) = center;
         zprof(i,4) = ztemp(1) + floor(l/2);
@@ -94,16 +96,21 @@ for i = 1:1 %length(coordinate(:,1))
         
         for j = 1 : length(cc.PixelIdxList)
             cell = cc.PixelIdxList{1,j};
-            a = find(cell == index_center);
-            if isempty(a) == 0
+            acell = find(cell == index_center);
+            if isempty(acell) == 0
                index_cell = j;
-            elseif isempty(a) == 1
+            elseif isempty(acell) == 1
                 nmip(cc.PixelIdxList{j}) = 0;
                             
             end
             
         end
+        stat = regionprops(nmip,'all');
+        ar = stat.MajorAxisLength/stat.MinorAxisLength;
+        ang = stat.Orientation;
         
+        nI = im2uint8(nmip);
+        imwrite(nI,[cellfold,filesep,sprintf('cell_%02d.tif',i)]);
         
     else 
         zprof(i,1) = i;
@@ -113,4 +120,3 @@ for i = 1:1 %length(coordinate(:,1))
       
 end
 
-imshow(nmip)
