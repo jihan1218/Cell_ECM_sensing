@@ -27,6 +27,7 @@ for i = 1:length(img(1,1,:))
 end
 
 %% register cells that are interested in
+celldata = struct([]);
 
 im_max = max(bw_stack,[],3);
 figure(100), imshow(im_max);
@@ -86,9 +87,7 @@ for i = 1:length(coordinate(:,1))
     l = length(ztemp);
     
     if ztemp(1)+floor(l/2) > zmin && ztemp(l)-floor(l/2) < length(bwz) -zmin 
-        zprof(i,1) = i;
-        zprof(i,2:3) = center;
-        zprof(i,4) = ztemp(1) + floor(l/2);
+        celldata(i).coordinates = [center(1), center(2), ztemp(1)+floor(l/2)];
         nstack = bw_stack(:,:,ztemp(1):ztemp(l));
         nmip = max(nstack,[],3);
         cc = bwconncomp(nmip);
@@ -105,17 +104,22 @@ for i = 1:length(coordinate(:,1))
             end
             
         end
+        %
+        nmip = imbinarize(nmip);
         stat = regionprops(nmip,'all');
-        ar = stat.MajorAxisLength/stat.MinorAxisLength;
-        ang = stat.Orientation;
+        
+        %
+        cellboundary = bwperim(nmip);
+        tempstruct = regionprops(cellboundary,'PixelList');
+        outlinecoor = tempstruct.PixelList;
+        [A, centerellip] = MinVolEllipse(outlinecoor', 1e-3);
+                
         
         nI = im2uint8(nmip);
         imwrite(nI,[cellfold,filesep,sprintf('cell_%02d.tif',i)]);
         
     else 
-        zprof(i,1) = i;
-        zprof(i,2:3) = center;
-        zprof(i,4) = NaN;
+        celldata(i).coordinates = [center(1), center(2), NaN];
     end
       
 end
