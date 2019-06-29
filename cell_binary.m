@@ -1,4 +1,7 @@
-station = 1;
+clear all 
+close all
+
+station = 2;
 
 if station == 1
     foldname = ['/home/kimji/Project/Cell_mechanics/cell_ECM_sensitivity/'...
@@ -12,7 +15,7 @@ else
 end
 
 img = loadimgs([foldname,filesep,imfold,filesep,'*ch00.tif'],0,1);
-mkdir([foldname,filesep,imfold,filesep,'BW']);
+mkdir([foldname,filesep,imfold,filesep,'BW_xyz']);
 bw_stack = zeros(1024,1024,length(img(1,1,:)));
 
 for i = 1:length(img(1,1,:))
@@ -21,12 +24,13 @@ for i = 1:length(img(1,1,:))
     imfilt = medfilt2(im_adjust);
     bw = imbinarize(imfilt);
     I = im2uint8(bw);
-    imwrite(I,[foldname,filesep,imfold,filesep,'BW',filesep,sprintf('xyz_%02d.tif',i)]);
+    imwrite(I,[foldname,filesep,imfold,filesep,'BW_xyz',filesep,sprintf('xyz_%02d.tif',i)]);
     bw_stack (:,:,i) = I;
     
 end
 
 %% register cells that are interested in
+celldata = struct([]);
 
 im_max = max(bw_stack,[],3);
 figure(100), imshow(im_max);
@@ -86,10 +90,8 @@ for i = 1:length(coordinate(:,1))
     l = length(ztemp);
     
     if ztemp(1)+floor(l/2) > zmin && ztemp(l)-floor(l/2) < length(bwz) -zmin 
-        zprof(i,1) = i;
-        zprof(i,2:3) = center;
-        zprof(i,4) = ztemp(1) + floor(l/2);
-        nstack = bw_stack(:,:,ztemp(1):ztemp(l));
+        celldata(i).zcenter = ztemp(1)+floor(l/2);
+        nstack = bw_stack(:,:,ztemp(1)-2:ztemp(l)+2);
         nmip = max(nstack,[],3);
         cc = bwconncomp(nmip);
         index_center = 1024*(center(1)-1)+center(2);
@@ -105,18 +107,63 @@ for i = 1:length(coordinate(:,1))
             end
             
         end
+        % getting information of cells
+        nmip = imbinarize(nmip);
         stat = regionprops(nmip,'all');
-        ar = stat.MajorAxisLength/stat.MinorAxisLength;
-        ang = stat.Orientation;
+        ellipse.majoraxis = stat.MajorAxisLength;
+        ellipse.minoraxis = stat.MinorAxisLength;
+        ellipse.aspectratio = ellipse.majoraxis/ellipse.minoraxis;
         
+        if stat.Orientation < 0
+            ellipse.angle = 180 + stat.Orientation;
+        else 
+            ellipse.angle = stat.Orientation;
+        end
+        celldata(i).xy = [center(1), center(2)];
+        celldata(i).aspectratio = ellipse.aspectratio;
+        celldata(i).angle = ellipse.angle;
+        celldata(i).area = stat.Area;
+        celldata(i).centermass = stat.Centroid; 
+        celldata(i).ellipse = ellipse;
+                
         nI = im2uint8(nmip);
         imwrite(nI,[cellfold,filesep,sprintf('cell_%02d.tif',i)]);
         
     else 
-        zprof(i,1) = i;
-        zprof(i,2:3) = center;
-        zprof(i,4) = NaN;
+        celldata(i).zcenter = NaN;
     end
       
 end
+outputfold = [foldname,filesep,imfold,filesep,'result'];
+mkdir(outputfold);
+save([outputfold,filesep,'celldata.mat'],'celldata');
 
+%% plot the result and save
+
+figure(200),imshow(im_max);
+t = linspace(0,2*pi,50);
+for index = 1: numel(celldata)
+    if isempty(celldata(index).xy) == 0
+    hold on
+        
+    angle = celldata(index).angle;
+    angle = angle*pi/180;
+    plot(celldata(index).centermass(1),celldata(index).centermass(2),'ro','MarkerSize',6,...
+        'MarkerEdgeColor','red','MarkerFaceColor','red');
+    a = celldata(index).ellipse.majoraxis / 2;
+    b = celldata(index).ellipse.minoraxis / 2;
+    xc = celldata(index).centermass(1);
+    yc = celldata(index).centermass(2);
+    xe = xc - a*cos(t)*cos(angle) + b*sin(t)*sin(angle);
+    ye = yc + a*cos(t)*sin(angle) + b*sin(t)*cos(angle);
+    plot(xe,ye,'b','LineWidth',3)
+    xi = xc - a*cos(angle);
+    xf = xc + a*cos(angle);
+    yi = yc - a*sin(angle);
+    yf = yc + a*sin(angle);
+    plot([xf xi],[yi yf],'g','LineWidth',2)
+    end
+end
+
+saveas(gcf,[outputfold,filesep,'xyz_result_' num2str(1) '.jpeg']); 
+close(200);    
