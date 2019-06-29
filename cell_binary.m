@@ -80,23 +80,16 @@ mkdir(cellfold);
 for i = 1:length(coordinate(:,1))
     
     center = coordinate(i,:);
-%     circle = sqrt((xmap-center(1)).^2+(ymap-center(2)).^2);
-%     circle(circle < r) = 1;
-%     circle(circle > 1) = 0;
-%     [yprof, xprof] = find(circle >0);
     bwtemp = bw_stack(center(2),center(1),:);
     bwz = squeeze(bwtemp);
     ztemp = find(bwz > 0);
     l = length(ztemp);
     
     if ztemp(1)+floor(l/2) > zmin && ztemp(l)-floor(l/2) < length(bwz) -zmin 
-<<<<<<< HEAD
+
         celldata(i).zcenter = ztemp(1)+floor(l/2);
         nstack = bw_stack(:,:,ztemp(1)-2:ztemp(l)+2);
-=======
-        celldata(i).coordinates = [center(1), center(2), ztemp(1)+floor(l/2)];
-        nstack = bw_stack(:,:,ztemp(1):ztemp(l));
->>>>>>> d9c313665d280b5e6d8bbd8eb0f64509b53f2108
+
         nmip = max(nstack,[],3);
         cc = bwconncomp(nmip);
         index_center = 1024*(center(1)-1)+center(2);
@@ -112,25 +105,13 @@ for i = 1:length(coordinate(:,1))
             end
             
         end
-<<<<<<< HEAD
+
         % getting information of cells
         nmip = imbinarize(nmip);
         stat = regionprops(nmip,'all');
         ellipse.majoraxis = stat.MajorAxisLength;
         ellipse.minoraxis = stat.MinorAxisLength;
         ellipse.aspectratio = ellipse.majoraxis/ellipse.minoraxis;
-=======
-        %
-        nmip = imbinarize(nmip);
-        stat = regionprops(nmip,'all');
-        
-        %
-        cellboundary = bwperim(nmip);
-        tempstruct = regionprops(cellboundary,'PixelList');
-        outlinecoor = tempstruct.PixelList;
-        [A, centerellip] = MinVolEllipse(outlinecoor', 1e-3);
-                
->>>>>>> d9c313665d280b5e6d8bbd8eb0f64509b53f2108
         
         if stat.Orientation < 0
             ellipse.angle = 180 + stat.Orientation;
@@ -148,11 +129,9 @@ for i = 1:length(coordinate(:,1))
         imwrite(nI,[cellfold,filesep,sprintf('cell_%02d.tif',i)]);
         
     else 
-<<<<<<< HEAD
+
         celldata(i).zcenter = NaN;
-=======
-        celldata(i).coordinates = [center(1), center(2), NaN];
->>>>>>> d9c313665d280b5e6d8bbd8eb0f64509b53f2108
+
     end
       
 end
