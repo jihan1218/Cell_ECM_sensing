@@ -33,6 +33,7 @@ end
 celldata = struct([]);
 
 im_max = max(bw_stack,[],3);
+im_max = im2uint8(im_max);
 figure(100), imshow(im_max);
 
 breaker = 1;
@@ -63,7 +64,7 @@ while(breaker)
         
     elseif check == 50
         breaker = 0;
-        saveas(gcf,[allcells,filesep,'xyz' num2str(1) '.jpeg']); 
+        %saveas(gcf,[allcells,filesep,'xyz' num2str(1) '.jpeg']); 
         close(100)
     end
     
@@ -86,8 +87,8 @@ for i = 1:length(coordinate(:,1))
     l = length(ztemp);
     
     if ztemp(1)+floor(l/2) > zmin && ztemp(l)-floor(l/2) < length(bwz) -zmin 
-
-        celldata(i).zcenter = ztemp(1)+floor(l/2);
+        count1 = count1 +1;
+        celldata(count1).zcenter = ztemp(1)+floor(l/2);
         nstack = bw_stack(:,:,ztemp(1)-2:ztemp(l)+2);
 
         nmip = max(nstack,[],3);
@@ -118,20 +119,16 @@ for i = 1:length(coordinate(:,1))
         else 
             ellipse.angle = stat.Orientation;
         end
-        celldata(i).xy = [center(1), center(2)];
-        celldata(i).aspectratio = ellipse.aspectratio;
-        celldata(i).angle = ellipse.angle;
-        celldata(i).area = stat.Area;
-        celldata(i).centermass = stat.Centroid; 
-        celldata(i).ellipse = ellipse;
+        celldata(count1).xy = [center(1), center(2)];
+        celldata(count1).aspectratio = ellipse.aspectratio;
+        celldata(count1).angle = ellipse.angle;
+        celldata(count1).area = stat.Area;
+        celldata(count1).centermass = round(stat.Centroid); 
+        celldata(count1).ellipse = ellipse;
                 
         nI = im2uint8(nmip);
         imwrite(nI,[cellfold,filesep,sprintf('cell_%02d.tif',i)]);
         
-    else 
-
-        celldata(i).zcenter = NaN;
-
     end
       
 end
@@ -168,3 +165,16 @@ end
 
 saveas(gcf,[outputfold,filesep,'xyz_result_' num2str(1) '.jpeg']); 
 close(200);    
+
+iminvert = uint8(255) - im_max;
+figure(300), imshow(iminvert);
+hold on
+for index2 = 1:numel(celldata)
+
+    str = sprintf('%d',index2);
+    text(celldata(index2).xy(1),celldata(index2).xy(2),str,'Color','red','FontSize',20);
+
+end
+saveas(gcf,[outputfold,filesep,'cellcount.jpeg']);
+close(300)
+
