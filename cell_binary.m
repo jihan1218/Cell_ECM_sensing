@@ -1,17 +1,20 @@
+
 clear all 
 close all
-
+% define working station
 station = 2;
+n = 3;
 
 if station == 1
     foldname = ['/home/kimji/Project/Cell_mechanics/cell_ECM_sensitivity/'...
         '25c_collagen_gradient/sample_04_48hr/'];
     s = dir(foldname);
-    imfold = s(6).name;
+    imfold = s(n).name;
 else 
-    foldname = '/Users/jihan/Desktop/sample_04_48hr';
+    foldname = '/Users/jihan/OneDrive/working/spiral collagen/';
     s =  dir(foldname);
-    imfold = s(4).name;
+    n = n + 3;
+    imfold = s(n).name;
 end
 
 img = loadimgs([foldname,filesep,imfold,filesep,'*ch00.tif'],0,1);
@@ -44,8 +47,7 @@ count = 0;
 r = 4;
 
 % to add a point: press 1, to finish adding a point: press 2
-allcells = [foldname,filesep,imfold,filesep,'cellnumber'];
-mkdir(allcells);
+
 while(breaker)
     
     check = getkey;
@@ -78,6 +80,7 @@ zprof = [];
 cellfold = [foldname,filesep,imfold,filesep,'single_cell'];
 mkdir(cellfold);
 
+% isolate single cell images
 for i = 1:length(coordinate(:,1))
     
     center = coordinate(i,:);
@@ -89,8 +92,17 @@ for i = 1:length(coordinate(:,1))
     if ztemp(1)+floor(l/2) > zmin && ztemp(l)-floor(l/2) < length(bwz) -zmin 
         count1 = count1 +1;
         celldata(count1).zcenter = ztemp(1)+floor(l/2);
-        nstack = bw_stack(:,:,ztemp(1)-2:ztemp(l)+2);
-
+        celldata(count1).xy = [center(1), center(2)];
+        if ztemp(1) - 2 <= 0
+               
+            nstack = bw_stack(:,:,ztemp(1):ztemp(l)+2);
+        elseif ztemp(l) + 2 >= length(bwz)+1
+            nstack =  bw_stack(:,:,ztemp(1)-2:ztemp(l));
+            
+        else
+            nstack = bw_stack(:,:,ztemp(1)-2:ztemp(l)+2);
+        end
+        
         nmip = max(nstack,[],3);
         cc = bwconncomp(nmip);
         index_center = 1024*(center(1)-1)+center(2);
@@ -106,32 +118,47 @@ for i = 1:length(coordinate(:,1))
             end
             
         end
-
-        % getting information of cells
         nmip = imbinarize(nmip);
-        stat = regionprops(nmip,'all');
-        ellipse.majoraxis = stat.MajorAxisLength;
-        ellipse.minoraxis = stat.MinorAxisLength;
-        ellipse.aspectratio = ellipse.majoraxis/ellipse.minoraxis;
-        
-        if stat.Orientation < 0
-            ellipse.angle = 180 + stat.Orientation;
-        else 
-            ellipse.angle = stat.Orientation;
-        end
-        celldata(count1).xy = [center(1), center(2)];
-        celldata(count1).aspectratio = ellipse.aspectratio;
-        celldata(count1).angle = ellipse.angle;
-        celldata(count1).area = stat.Area;
-        celldata(count1).centermass = round(stat.Centroid); 
-        celldata(count1).ellipse = ellipse;
-                
         nI = im2uint8(nmip);
-        imwrite(nI,[cellfold,filesep,sprintf('cell_%02d.tif',i)]);
-        
+        imwrite(nI,[cellfold,filesep,sprintf('cell_%02d.tif',count1)]);
     end
-      
 end
+
+outputfold = [foldname,filesep,imfold,filesep,'result'];
+mkdir(outputfold);
+save([outputfold,filesep,'celldata.mat'],'celldata');
+
+%% getting information of cells
+load([outputfold,filesep,'celldata.mat'],'celldata');
+cellfold = [foldname,filesep,imfold,filesep,'single_cell'];
+d = dir(cellfold);
+n1= 2;
+for i = 1:length(d)- n1
+   
+    cellname = [cellfold,filesep,d(i+n1).name];
+    nmip = imread(cellname);
+    nmip = imbinarize(nmip);
+    stat = regionprops(nmip,'all');
+    ellipse.majoraxis = stat.MajorAxisLength;
+    ellipse.minoraxis = stat.MinorAxisLength;
+    ellipse.aspectratio = ellipse.majoraxis/ellipse.minoraxis;
+
+    if stat.Orientation < 0
+        ellipse.angle = 180 + stat.Orientation;
+    else 
+        ellipse.angle = stat.Orientation;
+    end
+    
+    celldata(i).aspectratio = ellipse.aspectratio;
+    celldata(i).angle = ellipse.angle;
+    celldata(i).area = stat.Area;
+    celldata(i).centermass = round(stat.Centroid); 
+    celldata(i).ellipse = ellipse;
+                
+        
+end  
+ 
+  
 outputfold = [foldname,filesep,imfold,filesep,'result'];
 mkdir(outputfold);
 save([outputfold,filesep,'celldata.mat'],'celldata');
@@ -163,7 +190,7 @@ for index = 1: numel(celldata)
     end
 end
 
-saveas(gcf,[outputfold,filesep,'xyz_result_' num2str(1) '.jpeg']); 
+saveas(gcf,[outputfold,filesep,'xyz_result_ellipse.jpeg']); 
 close(200);    
 
 iminvert = uint8(255) - im_max;
@@ -177,4 +204,5 @@ for index2 = 1:numel(celldata)
 end
 saveas(gcf,[outputfold,filesep,'cellcount.jpeg']);
 close(300)
+
 
