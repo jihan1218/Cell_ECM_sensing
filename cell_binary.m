@@ -40,8 +40,9 @@ outputfold = [foldname,filesep,imfold,filesep,'result'];
 %% register cells that are interested in
 celldata = struct([]);
 
-im_max = max(bw_stack,[],3);
-im_max = im2uint8(im_max);
+%im_max = max(bw_stack,[],3);
+%im_max = im2uint8(im_max);
+
 figure(100), imshow(im_max);
 
 breaker = 1;
