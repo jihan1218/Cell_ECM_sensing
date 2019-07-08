@@ -1,8 +1,7 @@
-
 clear all 
 close all
 % define working station
-station = 1;
+station = 3;
 n = 2;
 
 if station == 1
@@ -11,11 +10,17 @@ if station == 1
     s = dir(foldname);
     n = n +5;
     imfold = s(n).name;
-else 
+elseif station == 2 
     foldname = '/Users/jihan/OneDrive/working/spiral collagen/';
     s =  dir(foldname);
     n = n + 3;
     imfold = s(n).name;
+else 
+    foldname = '/Volumes/Cellmechanics/onsite of contact guidance/ECM_cell_alignment/sample_02/';
+    s = dir(foldname);
+    n = n +3;
+    imfold = s(n).name;
+    
 end
 
 img = loadimgs([foldname,filesep,imfold,filesep,'*ch00.tif'],0,1);
@@ -37,103 +42,6 @@ im_max = max(bw_stack,[],3);
 im_max = im2uint8(im_max);
 outputfold = [foldname,filesep,imfold,filesep,'result'];
 
-%% register cells that are interested in
-celldata = struct([]);
-
-im_max = max(bw_stack,[],3);
-im_max = im2uint8(im_max);
-figure(100), imshow(im_max);
-
-breaker = 1;
-coordinate = [];
-
-count = 0;
-[xmap,ymap] = meshgrid(1:1024,1:1024);
-r = 4;
-
-% to add a point: press 1, to finish adding a point: press 2
-
-while(breaker)
-    
-    check = getkey;
-    
-    if check == 49
-        count = count + 1;
-        [x,y] = ginputc(1,'color','r','LineWidth',1);
-        fprintf('The number of points: %02d \n',count);
-        coordinate(count,:) = round([x,y]);
-        hold on
-        plot(x,y,'ro','MarkerSize',5,'MarkerEdgeColor','red',...
-            'MarkerFaceColor','red');
-        str = sprintf('%d',count);
-        text(round(x),round(y),str,'Color','red','FontSize',15);
-
-        
-    elseif check == 50
-        breaker = 0;
-        %saveas(gcf,[allcells,filesep,'xyz' num2str(1) '.jpeg']); 
-        close(100)
-    end
-    
-end
-
-%% Find a center z position and isolate single cell from other cells
-
-count1 = 0;
-zmin = 3;
-zprof = [];
-cellfold = [foldname,filesep,imfold,filesep,'single_cell'];
-mkdir(cellfold);
-
-% isolate single cell images
-for i = 1:length(coordinate(:,1))
-    
-    center = coordinate(i,:);
-    bwtemp = bw_stack(center(2),center(1),:);
-    bwz = squeeze(bwtemp);
-    ztemp = find(bwz > 0);
-    l = length(ztemp);
-    
-    if ztemp(1)+floor(l/2) > zmin && ztemp(l)-floor(l/2) < length(bwz) -zmin 
-        count1 = count1 +1;
-        celldata(count1).zcenter = ztemp(1)+floor(l/2);
-        celldata(count1).xy = [center(1), center(2)];
-        if ztemp(1) - 2 <= 0
-               
-            nstack = bw_stack(:,:,ztemp(1):ztemp(l)+2);
-        elseif ztemp(l) + 2 >= length(bwz)+1
-            nstack =  bw_stack(:,:,ztemp(1)-2:ztemp(l));
-            
-        else
-            nstack = bw_stack(:,:,ztemp(1)-2:ztemp(l)+2);
-        end
-        
-        nmip = max(nstack,[],3);
-        cc = bwconncomp(nmip);
-        index_center = 1024*(center(1)-1)+center(2);
-        
-        for j = 1 : length(cc.PixelIdxList)
-            cell = cc.PixelIdxList{1,j};
-            acell = find(cell == index_center);
-            if isempty(acell) == 0
-               index_cell = j;
-            elseif isempty(acell) == 1
-                nmip(cc.PixelIdxList{j}) = 0;
-                            
-            end
-            
-        end
-        nmip = imbinarize(nmip);
-        nI = im2uint8(nmip);
-        imwrite(nI,[cellfold,filesep,sprintf('cell_%02d.tif',count1)]);
-    end
-end
-
-outputfold = [foldname,filesep,imfold,filesep,'result'];
-mkdir(outputfold);
-save([outputfold,filesep,'celldata.mat'],'celldata');
-
-%% getting information of cells
 load([outputfold,filesep,'celldata.mat'],'celldata');
 cellfold = [foldname,filesep,imfold,filesep,'single_cell'];
 d = dir(cellfold);
@@ -167,8 +75,6 @@ end
 outputfold = [foldname,filesep,imfold,filesep,'result'];
 mkdir(outputfold);
 save([outputfold,filesep,'celldata.mat'],'celldata');
-
-%% plot the result and save
 
 figure(200),imshow(im_max);
 t = linspace(0,2*pi,50);
@@ -209,5 +115,4 @@ for index2 = 1:numel(celldata)
 end
 saveas(gcf,[outputfold,filesep,'cellcount.jpeg']);
 close(300)
-
 
