@@ -1,7 +1,7 @@
 clear all 
 close all
 % define working station
-station = 1;
+station = 3;
 n = 1;
 
 if station == 1
@@ -15,12 +15,11 @@ elseif station == 2
     s =  dir(foldname);
     n = n + 3;
     imfold = s(n).name;
-else 
-    foldname = ['/run/user/1000/gvfs/smb-share:server=sun-nas1.science.oregonstate.edu,'...
-        'share=cellmechanics/onsite of contact guidance/'...
-        'ECM_cell_interaction_strong_alignment/sample_03'];
+elseif station == 3 
+    foldname =['/Volumes/Cellmechanics/onsite of contact guidance/'...
+        'ECM_cell_interaction_strong_alignment/sample_01/'];
     s = dir(foldname);
-    n = n +2;
+    n = n +3;
     imfold = s(n).name;
     
 end

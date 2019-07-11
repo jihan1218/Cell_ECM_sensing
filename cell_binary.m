@@ -2,8 +2,8 @@
 clear all 
 close all
 % define working station
-station = 1;
-n = 4;
+station = 3;
+n = 1;
 
 if station == 1
     foldname = ['/home/kimji/Project/Cell_mechanics/cell_ECM_sensitivity/'...
@@ -11,8 +11,14 @@ if station == 1
     s = dir(foldname);
     n = n +2;
     imfold = s(n).name;
-else 
+elseif station == 2
     foldname = '/Users/jihan/OneDrive/working/spiral collagen/';
+    s =  dir(foldname);
+    n = n + 3;
+    imfold = s(n).name;
+elseif station == 3
+    foldname =['/Volumes/Cellmechanics/onsite of contact guidance/'...
+        'ECM_cell_interaction_strong_alignment/sample_01/'];
     s =  dir(foldname);
     n = n + 3;
     imfold = s(n).name;
