@@ -1,14 +1,14 @@
 clear all 
 close all
 % define working station
-station = 3;
-n = 2;
+station = 1;
+n = 1;
 
 if station == 1
     foldname = ['/home/kimji/Project/Cell_mechanics/cell_ECM_sensitivity/'...
-        '25c_collagen_gradient/sample_04_48hr/'];
+        'ECM_cell_interaction_strong_alignment/sample_01/'];
     s = dir(foldname);
-    n = n +5;
+    n = n +2;
     imfold = s(n).name;
 elseif station == 2 
     foldname = '/Users/jihan/OneDrive/working/spiral collagen/';
@@ -16,30 +16,18 @@ elseif station == 2
     n = n + 3;
     imfold = s(n).name;
 else 
-    foldname = '/Volumes/Cellmechanics/onsite of contact guidance/ECM_cell_alignment/sample_02/';
+    foldname = ['/run/user/1000/gvfs/smb-share:server=sun-nas1.science.oregonstate.edu,'...
+        'share=cellmechanics/onsite of contact guidance/'...
+        'ECM_cell_interaction_strong_alignment/sample_03'];
     s = dir(foldname);
-    n = n +3;
+    n = n +2;
     imfold = s(n).name;
     
 end
 
-img = loadimgs([foldname,filesep,imfold,filesep,'*ch00.tif'],0,1);
-mkdir([foldname,filesep,imfold,filesep,'BW_xyz']);
-bw_stack = zeros(1024,1024,length(img(1,1,:)));
-
-for i = 1:length(img(1,1,:))
-    imtemp = img(:,:,i);
-    im_adjust = imadjust(imtemp);
-    imfilt = medfilt2(im_adjust);
-    bw = imbinarize(imfilt);
-    I = im2uint8(bw);
-    imwrite(I,[foldname,filesep,imfold,filesep,'BW_xyz',filesep,sprintf('xyz_%02d.tif',i)]);
-    bw_stack (:,:,i) = I;
-    
-end
-
+bw_stack = loadimgs([foldname,filesep,imfold,filesep,'BW_xyz',filesep,'*.tif'],0,1);
 im_max = max(bw_stack,[],3);
-im_max = im2uint8(im_max);
+
 outputfold = [foldname,filesep,imfold,filesep,'result'];
 
 load([outputfold,filesep,'celldata.mat'],'celldata');
@@ -72,8 +60,6 @@ for i = 1:length(d)- n1
 end  
  
   
-outputfold = [foldname,filesep,imfold,filesep,'result'];
-mkdir(outputfold);
 save([outputfold,filesep,'celldata.mat'],'celldata');
 
 figure(200),imshow(im_max);

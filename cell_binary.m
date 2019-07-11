@@ -3,13 +3,13 @@ clear all
 close all
 % define working station
 station = 1;
-n = 2;
+n = 4;
 
 if station == 1
     foldname = ['/home/kimji/Project/Cell_mechanics/cell_ECM_sensitivity/'...
-        '25c_collagen_gradient/sample_04_48hr/'];
+        'ECM_cell_interaction_strong_alignment/sample_03/'];
     s = dir(foldname);
-    n = n +5;
+    n = n +2;
     imfold = s(n).name;
 else 
     foldname = '/Users/jihan/OneDrive/working/spiral collagen/';
@@ -22,11 +22,28 @@ img = loadimgs([foldname,filesep,imfold,filesep,'*ch00.tif'],0,1);
 mkdir([foldname,filesep,imfold,filesep,'BW_xyz']);
 bw_stack = zeros(1024,1024,length(img(1,1,:)));
 
+imtemp1 = img(:,:,1);
+[histo, a] = imhist(imtemp1);
+histo1 = histo(1:length(histo)-1,1);
+level1 = triangle_th(histo,length(histo));
+
+
 for i = 1:length(img(1,1,:))
+    imtemp = img(:,:,i);
+    [histo, a] = imhist(imtemp);
+    histo = histo(1:length(histo)-1,1);
+    level = triangle_th(histo,length(histo));
+    if level < 0.85*level1
+        level = level1;
+    end
+    im_bw = imbinarize(imtemp,level);
+    bw = medfilt2(im_bw);
+    %{
     imtemp = img(:,:,i);
     im_adjust = imadjust(imtemp);
     imfilt = medfilt2(im_adjust);
     bw = imbinarize(imfilt);
+    %}
     I = im2uint8(bw);
     imwrite(I,[foldname,filesep,imfold,filesep,'BW_xyz',filesep,sprintf('xyz_%02d.tif',i)]);
     bw_stack (:,:,i) = I;
