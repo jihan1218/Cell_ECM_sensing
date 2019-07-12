@@ -2,7 +2,7 @@ clear all
 close all
 % define working station
 station = 3;
-n = 1;
+n = 5;
 
 if station == 1
     foldname = ['/home/kimji/Project/Cell_mechanics/cell_ECM_sensitivity/'...
@@ -10,29 +10,33 @@ if station == 1
     s = dir(foldname);
     n = n +2;
     imfold = s(n).name;
+
 elseif station == 2 
     foldname = '/Users/jihan/OneDrive/working/spiral collagen/';
     s =  dir(foldname);
     n = n + 3;
     imfold = s(n).name;
+
 elseif station == 3 
     foldname =['/Volumes/Cellmechanics/onsite of contact guidance/'...
         'ECM_cell_interaction_strong_alignment/sample_01/'];
     s = dir(foldname);
     n = n +3;
     imfold = s(n).name;
+   
     
 end
-
-bw_stack = loadimgs([foldname,filesep,imfold,filesep,'BW_xyz',filesep,'*.tif'],0,1);
-im_max = max(bw_stack,[],3);
 
 outputfold = [foldname,filesep,imfold,filesep,'result'];
 
 load([outputfold,filesep,'celldata.mat'],'celldata');
 cellfold = [foldname,filesep,imfold,filesep,'single_cell'];
 d = dir(cellfold);
-n1= 2;
+cellstack = loadimgs([cellfold,filesep,'*.tif']);
+im_max = max(cellstack,[],3);
+n1 = length(d) - length(cellstack(1,1,:));
+
+
 for i = 1:length(d)- n1
    
     cellname = [cellfold,filesep,d(i+n1).name];
