@@ -105,7 +105,7 @@ end
 
 count1 = 0;
 zmin = 3;
-zprof = [];
+
 cellfold = [foldname,filesep,imfold,filesep,'single_cell'];
 mkdir(cellfold);
 
@@ -162,6 +162,7 @@ load([outputfold,filesep,'celldata.mat'],'celldata');
 cellfold = [foldname,filesep,imfold,filesep,'single_cell'];
 d = dir(cellfold);
 n1= 2;
+
 for i = 1:length(d)- n1
    
     cellname = [cellfold,filesep,d(i+n1).name];
@@ -171,7 +172,7 @@ for i = 1:length(d)- n1
     ellipse.majoraxis = stat.MajorAxisLength;
     ellipse.minoraxis = stat.MinorAxisLength;
     ellipse.aspectratio = ellipse.majoraxis/ellipse.minoraxis;
-
+        
     if stat.Orientation < 0
         ellipse.angle = 180 + stat.Orientation;
     else 
