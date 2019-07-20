@@ -1,43 +1,72 @@
 clear all 
 close all
 % define working station
-station = 3;
-n = 5;
+station = 1;
+sample = 1;
+region = 1;
 
 if station == 1
-    foldname = ['/home/kimji/Project/Cell_mechanics/cell_ECM_sensitivity/'...
-        'ECM_cell_interaction_strong_alignment/sample_01/'];
+    foldname = sprintf(['/home/kimji/Project/Cell_mechanics/cell_ECM_sensitivity/'...
+        'ECM_chem/bleb_3uM/s%02d'],sample);
     s = dir(foldname);
-    n = n +2;
-    imfold = s(n).name;
+    region = region +3;
+    imfold = s(region).name;
 
 elseif station == 2 
-    foldname = '/Users/jihan/OneDrive/working/spiral collagen/';
+    foldname = '/Users/jihan/OneDrive/working/spiral collagen';
     s =  dir(foldname);
-    n = n + 3;
-    imfold = s(n).name;
+    region = region + 3;
+    imfold = s(region).name;
 
 elseif station == 3 
-    foldname =['/Volumes/Cellmechanics/onsite of contact guidance/'...
-        'ECM_cell_interaction_strong_alignment/sample_01/'];
+    foldname = sprintf(['/Volumes/Cellmechanics/onsite of contact guidance/'...
+        'ECM_cell_interaction_strong_alignment/sample_%02d'],sample);
     s = dir(foldname);
-    n = n +3;
-    imfold = s(n).name;
+    region = region +3;
+    imfold = s(region).name;
    
     
 end
 
+
 outputfold = [foldname,filesep,imfold,filesep,'result'];
 
-load([outputfold,filesep,'celldata.mat'],'celldata');
+%load([outputfold,filesep,'celldata.mat'],'celldata');
+
 cellfold = [foldname,filesep,imfold,filesep,'single_cell'];
 d = dir(cellfold);
 cellstack = loadimgs([cellfold,filesep,'*.tif']);
 im_max = max(cellstack,[],3);
 n1 = length(d) - length(cellstack(1,1,:));
+ccount = 0;
 
+for cellnum = 1: length(cellstack(1,1,:))
+    ccount = ccount + 1;
+    figure(100),imshow(cellstack(:,:,cellnum));
+    [x,y] = ginputc(1,'color','r','LineWidth',1);
+    coordinate(ccount,:) = round([x,y]);
+end
+close(100)
+celldata = struct([]);
+count1 = 0;
+bw_stack = loadimgs([foldname,filesep,imfold,filesep,'BW_xyz/*.tif']);
 
-for i = 1:length(d)- n1
+for i = 1:length(coordinate)
+    
+    center = coordinate(i,:);
+    bwtemp = bw_stack(center(2),center(1),:);
+    bwz = squeeze(bwtemp);
+    ztemp = find(bwz > 0);
+    l = length(ztemp);
+    
+    count1 = count1 +1;
+    celldata(count1).zcenter = ztemp(1)+floor(l/2);
+    celldata(count1).xy = [center(1), center(2)];        
+
+end
+
+%%
+for i = 1:length(coordinate)
    
     cellname = [cellfold,filesep,d(i+n1).name];
     nmip = imread(cellname);
@@ -46,7 +75,13 @@ for i = 1:length(d)- n1
     ellipse.majoraxis = stat.MajorAxisLength;
     ellipse.minoraxis = stat.MinorAxisLength;
     ellipse.aspectratio = ellipse.majoraxis/ellipse.minoraxis;
-
+    
+    if length(stat)>1
+       ind = find([stat.Area] > 5);
+       stat = stat(ind);
+     
+    end
+    
     if stat.Orientation < 0
         ellipse.angle = 180 + stat.Orientation;
     else 
@@ -67,6 +102,7 @@ save([outputfold,filesep,'celldata.mat'],'celldata');
 
 figure(200),imshow(im_max);
 t = linspace(0,2*pi,50);
+
 for index = 1: numel(celldata)
     if isempty(celldata(index).xy) == 0
     hold on
