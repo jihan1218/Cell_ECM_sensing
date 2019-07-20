@@ -7,7 +7,7 @@ region = 1;
 
 if station == 1
     foldname = sprintf(['/home/kimji/Project/Cell_mechanics/cell_ECM_sensitivity/'...
-        'ECM_chem/bleb_3uM/s%02d'],sample);
+             'ECM_cell_interaction_strong_alignment/sample_%02d'],sample);
     s = dir(foldname);
     region = region +3;
     imfold = s(region).name;
@@ -43,6 +43,9 @@ ccount = 0;
 for cellnum = 1: length(cellstack(1,1,:))
     ccount = ccount + 1;
     figure(100),imshow(cellstack(:,:,cellnum));
+    cellcount = sprintf('%02d / %02d ',cellnum,length(cellstack(1,1,:)));
+    title(cellcount);
+    
     [x,y] = ginputc(1,'color','r','LineWidth',1);
     coordinate(ccount,:) = round([x,y]);
 end
