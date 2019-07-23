@@ -1,33 +1,33 @@
 clear all 
 close all
 % define working station
-station = 1;
+station = 2;
 sample = 1;
-region = 1;
+region = 2;
 
 if station == 1
     foldname = sprintf(['/home/kimji/Project/Cell_mechanics/cell_ECM_sensitivity/'...
              'ECM_cell_interaction_strong_alignment/sample_%02d'],sample);
     s = dir(foldname);
-    region = region +3;
-    imfold = s(region).name;
+    
 
 elseif station == 2 
-    foldname = '/Users/jihan/OneDrive/working/spiral collagen';
+    foldname = sprintf(['/Users/jihan/Desktop/on site contact guidance/'...
+            'ECM_chem/bleb_3uM/s%02d'],sample);
     s =  dir(foldname);
-    region = region + 3;
-    imfold = s(region).name;
-
+    
 elseif station == 3 
     foldname = sprintf(['/Volumes/Cellmechanics/onsite of contact guidance/'...
-        'ECM_cell_interaction_strong_alignment/sample_%02d'],sample);
+        'ECM_chem/bleb_3uM/s%02d'],sample);
     s = dir(foldname);
-    region = region +3;
-    imfold = s(region).name;
-   
-    
+  
 end
 
+reg = struct2cell(s);
+ind = find(contains(reg(1,:),'r'));
+reg = reg(1,ind);
+imfold = char(reg(1,region));
+  
 
 outputfold = [foldname,filesep,imfold,filesep,'result'];
 
