@@ -93,11 +93,13 @@ count = 0;
 cohm = max(all(:,4));
 bin = 10; 
 apr = 1.4;
-ind = find(all(:,4) > 1.2);
+ind = find(all(:,4) > 1.4);
 figure(100), scatter3(all(ind,4),all(ind,5),all(ind,8));
 xlabel('Aspect ratio');
 ylabel('Coherency');
 zlabel('d \Theta');
+
+
 %{
 for i = 0:cohm/bin:cohm - cohm/bin
     count = count + 1;
@@ -108,3 +110,15 @@ for i = 0:cohm/bin:cohm - cohm/bin
     stat(count,3) = std(sub(:,5));
 end
 %}
+
+%%
+dfold = '/home/kimji/Project/Cell_mechanics/On_site_contact_guidance/ECM_cell_interaction_strong_alignment/';
+
+apr =2;
+mapr = max(all(:,4));
+
+ind = find(all(:,4) >= 1.8 & all(:,4) < 13);
+figure, plot(all(ind,5),all(ind,8),'.');
+
+[idx,c] = kmeans(all(:,4),2);
+
