@@ -113,7 +113,7 @@ end
 
 %%
 %dfold = '/home/kimji/Project/Cell_mechanics/On_site_contact_guidance/ECM_cell_interaction_strong_alignment/';
-dfold  = ''
+dfold  = '/Volumes/JIhan_SSD/Cellmechanics/on site contact guidance/ECM_cell_interaction_strong_alignment/';
 apr =2;
 mapr = max(all(:,4));
 
