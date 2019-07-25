@@ -112,8 +112,8 @@ end
 %}
 
 %%
-dfold = '/home/kimji/Project/Cell_mechanics/On_site_contact_guidance/ECM_cell_interaction_strong_alignment/';
-
+%dfold = '/home/kimji/Project/Cell_mechanics/On_site_contact_guidance/ECM_cell_interaction_strong_alignment/';
+dfold  = ''
 apr =2;
 mapr = max(all(:,4));
 
@@ -121,4 +121,6 @@ ind = find(all(:,4) >= 1.8 & all(:,4) < 13);
 figure, plot(all(ind,5),all(ind,8),'.');
 
 [idx,c] = kmeans(all(:,4),2);
+
+
 
