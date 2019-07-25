@@ -21,21 +21,20 @@ motility ={};
 tcount = 0;
 
 
-for t = 0: 10%tmax-1
+for t = 0: tmax-1
     tcount = tcount + 1;
     
   
     stackbw = [];
     stack = loadimgs(sprintf([imfold,filesep,'*t%02d*ch00.tif'],t),0,1);
     lz = length(stack(1,1,:));
-    temp = stack(:,:,round(lz/3));
-   
+    temp = stack(:,:,8);
+    [histo, a] = imhist(temp);
+    histo = histo(1:length(histo)-1,1);
+    level = triangle_th(histo,length(histo));
         
     for z = 1:lz
         imtemp = stack(:,:,z);
-        [histo, a] = imhist(imtemp);
-        histo = histo(1:length(histo)-1,1);
-        level = triangle_th(histo,length(histo));
         im_bw = imbinarize(imtemp,level);
         %bw = medfilt2(im_bw);
     
@@ -77,10 +76,10 @@ for t = 0: 10%tmax-1
     imwrite(IM,[fmip,filesep,sprintf('s01_t%02d.tif',t)]);
     figure(100), imshow(IM);
     hold on 
-    plot(cellinfo(:,2),cellinfo(:,3),'r.','MarkerSize', 8);
-    set(gcf,'Position',[100 100 900 900]);
-    imname = [fcomb,filesep,sprintf('comb_t%02d.jpg',t)];
-    export_fig(imname,'-tiff');
+    plot(cellinfo(:,2),cellinfo(:,3),'r.','MarkerSize', 15);
+    set(gcf,'Position',[100 100 1000 1000]);
+    imname = [fcomb,filesep,sprintf('comb_t%02d.tif',t)];
+    export_fig(imname,'-tif');
     hold off
     close(100)
     for z=1:lz
