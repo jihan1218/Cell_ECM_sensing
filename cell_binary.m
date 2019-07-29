@@ -3,26 +3,30 @@ clear all
 close all
 % define working station
 station = 3;
-n = 1;
+sample = 2;
+region = 1;
 
 if station == 1
     foldname = ['/home/kimji/Project/Cell_mechanics/cell_ECM_sensitivity/'...
         'ECM_cell_interaction_strong_alignment/sample_03/'];
     s = dir(foldname);
-    n = n +2;
-    imfold = s(n).name;
+   
 elseif station == 2
     foldname = '/Users/jihan/OneDrive/working/spiral collagen/';
     s =  dir(foldname);
-    n = n + 3;
-    imfold = s(n).name;
+  
 elseif station == 3
-    foldname =['/Volumes/Cellmechanics/onsite of contact guidance/'...
-        'ECM_cell_interaction_strong_alignment/sample_01/'];
+    foldname =sprintf(['/Volumes/Cellmechanics/onsite of contact guidance/'...
+        'ECM_chem/bleb_3uM/s%02d'],sample);
     s =  dir(foldname);
-    n = n + 3;
-    imfold = s(n).name;
+   
 end
+
+reg = struct2cell(s);
+ind = find(contains(reg(1,:),'r'));
+reg = reg(1,ind);
+imfold = char(reg(1,region));
+
 
 img = loadimgs([foldname,filesep,imfold,filesep,'*ch00.tif'],0,1);
 mkdir([foldname,filesep,imfold,filesep,'BW_xyz']);
@@ -39,9 +43,12 @@ for i = 1:length(img(1,1,:))
     [histo, a] = imhist(imtemp);
     histo = histo(1:length(histo)-1,1);
     level = triangle_th(histo,length(histo));
+    
     if level < 0.85*level1
         level = level1;
     end
+    
+    
     im_bw = imbinarize(imtemp,level);
     bw = medfilt2(im_bw);
     %{
