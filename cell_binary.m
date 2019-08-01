@@ -3,8 +3,8 @@ clear all
 close all
 % define working station
 station = 3;
-sample = 2;
-region = 1;
+sample = 1;
+region = 8;
 
 if station == 1
     foldname = ['/home/kimji/Project/Cell_mechanics/cell_ECM_sensitivity/'...
@@ -16,8 +16,8 @@ elseif station == 2
     s =  dir(foldname);
   
 elseif station == 3
-    foldname =sprintf(['/Volumes/Cellmechanics/onsite of contact guidance/'...
-        'ECM_chem/bleb_3uM/s%02d'],sample);
+    foldname =sprintf(['/Volumes/JIhan_SSD/Cellmechanics/on site contact guidance/'...
+        'ECM_chem/FN_5nM/s%02d'],sample);
     s =  dir(foldname);
    
 end

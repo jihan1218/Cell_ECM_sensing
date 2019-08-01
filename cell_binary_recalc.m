@@ -1,9 +1,9 @@
 clear all 
 close all
 % define working station
-station = 2;
+station = 3;
 sample = 1;
-region = 2;
+region = 5;
 
 if station == 1
     foldname = sprintf(['/home/kimji/Project/Cell_mechanics/cell_ECM_sensitivity/'...
@@ -17,7 +17,7 @@ elseif station == 2
     s =  dir(foldname);
     
 elseif station == 3 
-    foldname = sprintf(['/Volumes/Cellmechanics/onsite of contact guidance/'...
+    foldname = sprintf(['/Volumes/JIhan_SSD/Cellmechanics/on site contact guidance/'...
         'ECM_chem/bleb_3uM/s%02d'],sample);
     s = dir(foldname);
   
@@ -35,6 +35,12 @@ outputfold = [foldname,filesep,imfold,filesep,'result'];
 
 cellfold = [foldname,filesep,imfold,filesep,'single_cell'];
 d = dir(cellfold);
+d1 = struct2cell(d);
+ind1 = find(contains(d1(1,:),'._cell'));
+delfile = [cellfold,filesep,d(ind1).name];
+delete delfile
+
+
 cellstack = loadimgs([cellfold,filesep,'*.tif']);
 im_max = max(cellstack,[],3);
 n1 = length(d) - length(cellstack(1,1,:));
