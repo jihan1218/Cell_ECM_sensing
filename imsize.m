@@ -4,7 +4,7 @@ station = 1;
 if station == 1 % motility plot result 
 
     %foldname ='/Users/jihan/Desktop/on site contact guidance/motility/4x/s01';
-    foldname = '/Volumes/JIhan_SSD/Cellmechanics/on site contact guidance/Motility/4x/s03';
+    foldname = '/Volumes/JIhan_SSD/Cellmechanics/on site contact guidance/Motility/10x/s01';
 
 
     fresult = [foldname,filesep,'result'];
@@ -13,7 +13,7 @@ if station == 1 % motility plot result
     mkdir(nfcomb);
 
     %stack = loadimgs([fcomb,filesep,'*.tif']);
-    side = 839;
+    side = 841;
     
     d = dir(fcomb);
     n = struct2cell(d);
@@ -25,12 +25,23 @@ if station == 1 % motility plot result
         iname = [fcomb,filesep,d(ind(i)).name];
         im = imread(iname);
         [x,y,z] =size (im);
-        dx = x - side;
-        dy = y - side;
-        xbegin = round(dx/2);
-        xend = xbegin+side-1;
-        ybegin = round(dy/2);
-        yend = ybegin +side-1;
+        if x ~= side
+            dx = x - side;
+            xbegin = round(dx/2);
+            xend = xbegin+side-1;
+        elseif x == side
+            xbegin = 1;
+            xend = side;
+        end
+        if y ~= side
+            dy = y - side;
+            ybegin = round(dy/2);
+            yend = ybegin +side-1;
+        elseif y == side
+            ybegin = 1;
+            yend = side;
+        end
+        
         nim = im(xbegin:xend,ybegin:yend,:);
         imwrite(nim,[nfcomb,filesep,sprintf('comb_t%02d.tif',i)]);
     end

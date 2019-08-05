@@ -3,7 +3,7 @@ close all
 % define working station
 station = 3;
 sample = 1;
-region = 5;
+region = 8;
 
 if station == 1
     foldname = sprintf(['/home/kimji/Project/Cell_mechanics/cell_ECM_sensitivity/'...
@@ -38,7 +38,8 @@ d = dir(cellfold);
 d1 = struct2cell(d);
 ind1 = find(contains(d1(1,:),'._cell'));
 delfile = [cellfold,filesep,d(ind1).name];
-delete delfile
+delete(delfile);
+
 
 
 cellstack = loadimgs([cellfold,filesep,'*.tif']);
@@ -86,7 +87,7 @@ for i = 1:length(coordinate)
     ellipse.aspectratio = ellipse.majoraxis/ellipse.minoraxis;
     
     if length(stat)>1
-       ind = find([stat.Area] > 5);
+       ind = find([stat.Area] > 30);
        stat = stat(ind);
      
     end
