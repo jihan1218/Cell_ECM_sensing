@@ -1,9 +1,11 @@
 clear all 
 close all
+
 % define working station
-station = 3;
+station = 2;
+chem = 'bleb_5uM';
 sample = 1;
-region = 8;
+region = 2;
 
 if station == 1
     foldname = sprintf(['/home/kimji/Project/Cell_mechanics/cell_ECM_sensitivity/'...
@@ -12,13 +14,14 @@ if station == 1
     
 
 elseif station == 2 
-    foldname = sprintf(['/Users/jihan/Desktop/on site contact guidance/'...
-            'ECM_chem/bleb_3uM/s%02d'],sample);
+    foldname = ['/media/kimji/JIhan_SSD/Cellmechanics/'...
+        'on site contact guidance/ECM_chem',filesep,chem,filesep,...
+        sprintf('s%02d',sample)];
     s =  dir(foldname);
     
 elseif station == 3 
-    foldname = sprintf(['/Volumes/JIhan_SSD/Cellmechanics/on site contact guidance/'...
-        'ECM_chem/bleb_3uM/s%02d'],sample);
+    foldname = ['/Volumes/JIhan_SSD/Cellmechanics/on site contact guidance/ECM_chem'...
+        filesep,chem,filesep,sprintf('s%02d',sample)];
     s = dir(foldname);
   
 end
