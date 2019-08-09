@@ -89,19 +89,22 @@ switch mode
         %figure, surf(col,row,angle);
         figure, imagesc(coherency);
         set(gcf,'position',[100 100 800 800]) ;
-        export_fig([foldname,filesep,'coherency.pdf'],'-pdf');
+        %colorbar;
+        %export_fig([foldname,filesep,'coherency.pdf'],'-eps');
         
         %xticks([])
         %yticks([])
 
         figure, imagesc(angle);
         set(gcf,'position',[100 100 800 800]) ;
-        export_fig([foldname,filesep,'angle.eps'],'-eps');
+        %colorbar;
+        %export_fig([foldname,filesep,'angle.eps'],'-eps');
+        
         %xticks([])
         %yticks([])
-
         
-   
+        save([foldname,filesep,'mapinfo.mat'],'mapinfo','angle','coherency','col','row');
+        
         
         
         
