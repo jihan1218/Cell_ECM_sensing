@@ -1,10 +1,16 @@
 
 clear all 
-s = 2;
-for time = 2:5
+s = 3;
+mode = 2;% 1: high cell density || 2: moderate cell density
+
+
+for time = 1:1 %2
     %foldname = '/home/kimji/Project/Cell_mechanics/On_site_contact_guidance/Motility/4x/s01/';
     %foldname ='/Users/jihan/Desktop/on site contact guidance/motility/4x/s01';
-    foldname = sprintf('/Volumes/JIhan_SSD/Cellmechanics/on site contact guidance/Motility/10x/s%02d',s);
+    %foldname = sprintf('/Volumes/JIhan_SSD/Cellmechanics/on site contact guidance/Motility/10x/s%02d',s);
+    foldname = ['/media/kimji/JIhan_SSD/Cellmechanics/'...
+        'on site contact guidance/Motility/10x',filesep,sprintf('s%02d',s)];
+        
     imfold = [foldname,filesep,sprintf('xyzt_%02d',time)];
     fresult = [foldname,filesep,'result'];
 
@@ -46,7 +52,7 @@ for time = 2:5
     %se =strel('cube',3);
 
 
-    for st = 0: tmax-1
+    for st = 0: 2 %tmax-1
         tcount = tcount + 1;
         t = st + bt;
 
@@ -66,9 +72,14 @@ for time = 2:5
         for z = 1:lz
             imtemp = stack(:,:,z);
             im_bw = imbinarize(imtemp,level);
-
             bw_sp = medfilt2(im_bw);
-            bw = imerode(bw_sp,se);
+            
+            if mode == 1
+                bw = imerode(bw_sp,se);
+            else
+                bw = bw_sp;
+            end
+            
             stackbw(:,:,z) = bw;
         end
         cc = bwconncomp(stackbw,26);
