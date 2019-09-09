@@ -1,7 +1,7 @@
 
 clear all 
 s = 3;
-mode = 2;% 1: high cell density || 2: moderate cell density
+mode = 1;% 1: high cell density || 2: moderate cell density
 
 
 for time = 1:1 %2
@@ -102,7 +102,7 @@ for time = 1:1 %2
             mip = imbinarize(mip);
             stats = regionprops(mip,'Centroid','Orientation','MajorAxisLength','MinorAxisLength');
             cellinfo(i,1) = i;
-            cellinfo(i,2:3) = round(stats.Centroid);
+            cellinfo(i,2:3) = stats.Centroid;
             cellinfo(i,4) = stats.MajorAxisLength/stats.MinorAxisLength;
             cellinfo(i,5) = stats. Orientation;
             if cellinfo(i,5) < 0 

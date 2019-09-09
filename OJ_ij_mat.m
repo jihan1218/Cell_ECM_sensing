@@ -2,10 +2,11 @@
 % Miji; to start with imagej in Matlab
 %
 
-foldname = '/Volumes/JIhan_SSD/Cellmechanics/on site contact guidance/ECM_chem';
-exp = 'bleb_3uM';
-sample = 1;
-region = 8;
+%foldname = '/Volumes/JIhan_SSD/Cellmechanics/on site contact guidance/ECM_chem';
+foldname = '/Users/jihan/Documents/Cellmechanics/on site contact guidance/ECM_chem';
+exp = 'bleb_5uM';
+sample = 2;
+region = 7;
 
 imfold = [foldname,filesep,exp,filesep,sprintf('s%02d/r%02d',sample,region)];
 imseq = strcat('"open=[',imfold,'] file=ch02 sort"');
