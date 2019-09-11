@@ -89,23 +89,30 @@ switch mode
         %figure, surf(col,row,angle);
         figure, imagesc(coherency);
         set(gcf,'position',[100 100 800 800]) ;
-        %colorbar;
+        %c=colorbar;
         %export_fig([foldname,filesep,'coherency.pdf'],'-eps');
         
         %xticks([])
         %yticks([])
-
+        %set(c,'YTick',[]);
         figure, imagesc(angle);
         set(gcf,'position',[100 100 800 800]) ;
-        %colorbar;
+        %c1=colorbar;
         %export_fig([foldname,filesep,'angle.eps'],'-eps');
         
         %xticks([])
         %yticks([])
+        %set(c1, 'YTick',[]);
+        %separate colorbar plot
+        %{
+        colormap('parula');
+        cbar = colobar;
+        axis off;
+        set(cbar,'YTick',[]);
         
-        save([foldname,filesep,'mapinfo.mat'],'mapinfo','angle','coherency','col','row');
-        
-        
+        %}
+        save([foldname,filesep,'mapinfo.mat'],'mapinfo','angle','coherency','col','row'); 
+       
         
         
 end
