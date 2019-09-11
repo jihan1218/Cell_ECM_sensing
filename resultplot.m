@@ -1,7 +1,7 @@
 %% import cell data and collagen data
 clear all 
 
-style  = 2; 
+style  = 1; 
 %1: combine cell and collagen data
 %2: 3d clustering and plot 
 %
@@ -11,10 +11,15 @@ if style == 1
     station = 2;
     result = {};
     scount = 0;
-
+    chem = 'FN_200nM';
+    nsample = 1;
+    foldsave = ['/Users/jihan/Documents/Cellmechanics/'...
+        'on site contact guidance/ECM_chem',filesep,chem];
+    
+    
     all = [];
     count = 0;
-    for sample = 1:3 
+    for sample = 1:nsample 
         scount = scount + 1;
         if station == 1
             foldname = sprintf(['/home/kimji/Project/Cell_mechanics/cell_ECM_sensitivity/'...
@@ -22,7 +27,12 @@ if style == 1
             s = dir(foldname);
     %         n = n+5;
     %         imfold = s(n).name;
-        else 
+        elseif station == 2
+            foldname = ['/Users/jihan/Documents/Cellmechanics/on site contact guidance/'...
+                'ECM_chem',filesep,chem,filesep,sprintf('s%02d',sample)];
+            s =  dir(foldname);    
+            
+        elseif station == 3 
             foldname = sprintf(['/Users/jihan/Desktop/on site contact guidance/'...
                 'ecm strong alignment/sample_%02d'],sample);
             s =  dir(foldname);
@@ -30,16 +40,21 @@ if style == 1
     %         imfold = s(n).name;
         end
         rcount = 0 ;
-        for nr =1: length(s)
-            imfold = s(nr).name;
+        reg = struct2cell(s);
+        ind = find(~contains(reg(1,:),'.'));
+        reg = reg(1,ind);
 
-            if strfind(imfold,'region') == 1
+        
+        for nr =1: length(reg)
+            imfold = char(reg(1,nr));
+
+            
                 rcount = rcount + 1;
                 count = count + 1;
 
 
                 resultfold = [foldname, filesep, imfold, filesep, 'result'];
-                collagen = readtable([resultfold,filesep,'collagen_orient_200.csv']);
+                collagen = readtable([resultfold,filesep,'collagen_orient.csv']);
                 load([resultfold,filesep,'celldata.mat'],'celldata');
 
                 coltemp = [];
@@ -81,7 +96,7 @@ if style == 1
                     comb(i,10) = celldata(i).centermass(2)- colcord(1,2);
                 end
                  result{count,1} = comb;
-            end
+            
         end
 
     end
@@ -91,7 +106,7 @@ if style == 1
         all = [all; m];
     end
 
-    save(['/Users/jihan/Desktop/on site contact guidance/ecm strong alignment/final_result.mat'],'all','result');
+    save([foldsave,filesep,'final_result.mat'],'all','result');
 
 elseif style == 2
 %% plot data

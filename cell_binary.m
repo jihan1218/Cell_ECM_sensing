@@ -2,9 +2,9 @@
 clear all 
 close all
 % define working station
-station = 3;
+station = 2;
 sample = 1;
-region = 8;
+region = 9;
 
 if station == 1
     foldname = ['/home/kimji/Project/Cell_mechanics/cell_ECM_sensitivity/'...
@@ -12,7 +12,8 @@ if station == 1
     s = dir(foldname);
    
 elseif station == 2
-    foldname = '/Users/jihan/OneDrive/working/spiral collagen/';
+    foldname = ['/Users/jihan/Documents/Cellmechanics/on site contact guidance/'...
+        'ECM_chem/FN_200nM',filesep,sprintf('s%02d',sample)];
     s =  dir(foldname);
   
 elseif station == 3
@@ -23,7 +24,7 @@ elseif station == 3
 end
 
 reg = struct2cell(s);
-ind = find(contains(reg(1,:),'r'));
+ind = find(~contains(reg(1,:),'.'));
 reg = reg(1,ind);
 imfold = char(reg(1,region));
 

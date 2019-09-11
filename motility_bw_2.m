@@ -1,6 +1,6 @@
 
 clear all 
-sample = 1;
+sample = 3;
 mode = 2;% 1: high cell density || 2: moderate cell density
 windowsize = 3; % for smoothing bw image (pixel)
 kernel = ones(windowsize)/ windowsize^2;
@@ -12,8 +12,8 @@ for time = 2:2
     %foldname = sprintf('/Volumes/JIhan_SSD/Cellmechanics/on site contact guidance/Motility/10x/s%02d',s);
     foldname = ['/Users/jihan/Documents/Cellmechanics/on site contact guidance/'...
         'Motility/4x',filesep,sprintf('s%02d',sample)];
-        
-    imfold = [foldname,filesep,sprintf('xyzt_%02d',time)];
+
+    imfold = [foldname,filesep,sprintf('xyzt_%02d/t1',time)];
     fresult = [foldname,filesep,'result'];
 
     if ~exist(fresult,'dir')
@@ -29,7 +29,7 @@ for time = 2:2
         n = struct2cell(d);
         ind = find(contains(n(1,:),'z00_ch00'));
         tmax = length(ind);
-        
+
         motility ={};
         tcount = 0;
         bt = 0;
@@ -44,7 +44,7 @@ for time = 2:2
         fmip = [fresult,filesep,'mip'];
         fcomb = [fresult,filesep,'combine'];
         tmax = length(ind);
-       
+
 
     end
 
@@ -59,7 +59,7 @@ for time = 2:2
         t = st + bt;
 
         stackbw = [];
-        stack = loadimgs(sprintf([imfold,filesep,'*t%02d_*ch00.tif'],st),0,1);
+        stack = loadimgs(sprintf([imfold,filesep,'*t%02d_*ch00.tif'],st+1),0,1);
         lz = length(stack(1,1,:));
         Imean = [];
         for z = 1:lz
@@ -70,7 +70,7 @@ for time = 2:2
         [histo, a] = imhist(temp);
         histo = histo(1:length(histo)-1,1);
         level = triangle_th(histo,length(histo));
-        
+
         if ~isnan(level)
             for z = 1:lz
                 imtemp = stack(:,:,z);
@@ -144,3 +144,4 @@ for time = 2:2
     end
     save([fresult,filesep,'motility.mat'],'motility');
 end
+
