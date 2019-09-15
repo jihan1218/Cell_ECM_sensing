@@ -4,11 +4,11 @@ mode = 2;
 
 %1: crop subwindow images
 %2: combine data and plot
-rpm = 90;
+rpm = 0;
 resol = 50; %subresolution within the picture
 
-foldname = '/media/kimji/JIhan_SSD/Cellmechanics/on site contact guidance/analysis/ECM/useful'; %from linux
-%foldname = '/Volumes/JIhan_SSD/Cellmechanics/on site contact guidance/ECM_nocells/10x/3x3'; %from mac
+%foldname = '/media/kimji/JIhan_SSD/Cellmechanics/on site contact guidance/analysis/ECM/useful'; %from linux
+foldname = '/Volumes/JIhan_SSD/Cellmechanics/on site contact guidance/ECM_nocells/00rpm 5x5'; %from mac
 switch mode
 %% obtaining subwindow images
     case 1

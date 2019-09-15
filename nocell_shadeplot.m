@@ -1,15 +1,16 @@
 %% ecm no cell shade plot
 
-foldname = ['/Users/jihan/Documents/Cellmechanics/on site contact guidance/'...
-    'ECM_nocells/10x/3x3'];
-filename = [foldname,filesep,'mapinfo20.mat'];
+%foldname = ['/Users/jihan/Documents/Cellmechanics/on site contact guidance/'...
+%    'ECM_nocells/10x/3x3'];
+foldname = '/Volumes/JIhan_SSD/Cellmechanics/on site contact guidance/ECM_nocells/00rpm 5x5';
+filename = [foldname,filesep,'mapinfo_00.mat'];
 
 load(filename);
 
 %mapinfo 
 %column 2,3 -> x,y coordinates
 %column 5 -> coherency
-imname = [foldname,filesep,'raw_adjust.tif'];
+imname = [foldname,filesep,'rpm00.tif'];
 img = loadimgs(imname);
 
 [lx, ly] = size(img);
