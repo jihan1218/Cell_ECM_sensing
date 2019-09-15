@@ -4,24 +4,26 @@ mode = 2;
 
 %1: crop subwindow images
 %2: combine data and plot
+rpm = 90;
+resol = 50; %subresolution within the picture
 
-
-%foldname = '/media/kimji/JIhan_SSD/Cellmechanics/on site contact guidance/ECM_nocells/10x/3x3/';
-foldname = '/Volumes/JIhan_SSD/Cellmechanics/on site contact guidance/ECM_nocells/10x/3x3';
+foldname = '/media/kimji/JIhan_SSD/Cellmechanics/on site contact guidance/analysis/ECM/useful'; %from linux
+%foldname = '/Volumes/JIhan_SSD/Cellmechanics/on site contact guidance/ECM_nocells/10x/3x3'; %from mac
 switch mode
 %% obtaining subwindow images
     case 1
         % 100 um -> 100 x 100 pixels in OrientationJ meausre window
+        % cell free ECM images are taken with 10x air 
+         
         
-        map = loadimgs([foldname,filesep,'raw_adjust.tif'],0,1);
-        mapname = [foldname,filesep,'map'];
+        map = loadimgs([foldname,filesep,sprintf('rpm%02d.tif',rpm)],0,1);
+        mapname = [foldname,filesep,sprintf('map_%02d',rpm)];
         mkdir(mapname);
         wsize = 200; %200x200 pixels 
         halfw = wsize/2;
 
         [h,w] = size(map); % 2800 x 2800
-        resol = 20; % subresolution within the picture
-
+     
         nframe = (h-wsize)/resol;
         count = 0;
         mapinfo = [];
@@ -57,7 +59,7 @@ switch mode
 
                 end
               swind = map(rbegin:rend,cbegin:cend);
-             % imwrite(swind,[mapname,filesep,sprintf('map_%d.tif',count)]);
+              imwrite(swind,[mapname,filesep,sprintf('map_%d.tif',count)]);
 
               center = [r*resol+halfw, c*resol+halfw];
               mapinfo(count,1:3) = [count,center];
@@ -65,17 +67,25 @@ switch mode
 
             end
         end
-        save([foldname,filesep,'mapinfo.mat'],'mapinfo');
+        filename = sprintf('mapinfo_%02d.mat',rpm);
+        save([foldname,filesep,filename],'mapinfo');
 
 
 %% plot mode
     case 2
-        orient =  readtable([foldname, filesep,'map20.csv']);
-        load([foldname,filesep,'mapinfo20.mat']);
+        
+        filenamecol = sprintf('map_%02d.csv',rpm);
+        orient =  readtable([foldname, filesep,filenamecol]);
+        filename = sprintf('mapinfo_%02d.mat',rpm);
+        load([foldname,filesep,filename]);
+        
         mapinfo(:,4) = table2array(orient(:,9));
         mapinfo(:,5) = table2array(orient(:,10));
-        %[col, row] = meshgrid(150:50:2650,150:50:2650);
-        [col, row] = meshgrid(100:20:2700,100:20:2700);
+        if resol == 50 
+            [col, row] = meshgrid(100:50:2700,100:50:2700);
+        elseif resol == 20
+            [col, row] = meshgrid(100:20:2700,100:20:2700);
+        end
         
         [lc,lr] = size(col);
         angle = zeros(lc,lr);
@@ -93,18 +103,23 @@ switch mode
         %figure, surf(col,row,angle);
         figure, imagesc(coherency);
         set(gcf,'position',[100 100 800 800]) ;
-<<<<<<< HEAD
-        %c=colorbar;
-        %export_fig([foldname,filesep,'coherency.pdf'],'-eps');
+
+        c=colorbar;
+        imco = sprintf('coherency_%02d.png',rpm);
+        export_fig([foldname,filesep,imco],'-png');
+        titleco = sprintf('Coherency %02d rpm',rpm);
+        title(titleco);
         
         %xticks([])
         %yticks([])
         %set(c,'YTick',[]);
         figure, imagesc(angle);
         set(gcf,'position',[100 100 800 800]) ;
-        %c1=colorbar;
-        %export_fig([foldname,filesep,'angle.eps'],'-eps');
-        
+        c1=colorbar;
+        imang = sprintf('angle_%02d.png',rpm);
+        export_fig([foldname,filesep,imang],'-png');
+        titleang = sprintf('Angle %02d rpm',rpm);
+        title(titleang);
         %xticks([])
         %yticks([])
         %set(c1, 'YTick',[]);
@@ -116,25 +131,10 @@ switch mode
         set(cbar,'YTick',[]);
         
         %}
-        save([foldname,filesep,'mapinfo.mat'],'mapinfo','angle','coherency','col','row'); 
+        save([foldname,filesep,filename],'mapinfo','angle','coherency','col','row'); 
        
         
-=======
-        colormap hot
-        %colorbar;
-        xticks([])
-        yticks([])
-        export_fig([foldname,filesep,'coherency_nolabel.png'],'-png');
-        figure, imagesc(angle);
-        set(gcf,'position',[100 100 800 800]) ;
-        %colorbar;
-        colormap jet
-        xticks([])
-        yticks([])
-        export_fig([foldname,filesep,'angle_nolabel.png'],'-png');
-        save([foldname,filesep,'mapinfo20.mat'],'mapinfo','angle','coherency','col','row');
-
->>>>>>> 1f61536d68bc6cdf73a4018a0acfd36484a01602
+        close all
         
 end
 
