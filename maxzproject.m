@@ -1,27 +1,44 @@
 % max z projection
+clear all
 
-foldnum = 2;
-type = 'talin';
-ch = 2;
-
-imfold = sprintf(['/Volumes/JIhan_SSD/Cellmechanics/on site contact guidance/molecule/'...
-    's01_actin_talin/xyzt_%02d'],foldnum);
-
-newfold = ['/Volumes/JIhan_SSD/Cellmechanics/on site contact guidance/molecule/'...
-    's01_actin_talin',filesep,sprintf('%s_max_%02d',type,foldnum)];
+ch = 0;
+sample = 7;
+time = 1;
 
 
+%foldname = ['/Volumes/JIhan_SSD/Cellmechanics/on site contact guidance/Motility/'...
+%    '10x',filesep,sprintf('s%02d',sample)];
+foldname = ['/media/kimji/JIhan_SSD/Cellmechanics/on site contact guidance/molecular/'...
+    'dynamic',filesep,sprintf('s%02d',sample)];
+
+newfold = [foldname,filesep,'xyt_max'];
 mkdir(newfold);
-d = dir(imfold);
-reg = struct2cell(d);
-ind = find(contains(reg(1,:),'z0_ch00'));
-lt = length(ind);
+count = 0;
 
-
-for t =0 : lt -1
-    im = loadimgs([imfold,filesep,sprintf('*t%02d_*ch%02d.tif',t,ch)]);
-    mip = max(im,[],3);
-    imwrite(mip,[newfold,filesep,sprintf('actin_t%02d.tif',t)]);
+for t = 1: time
+    imfold = [foldname,filesep,sprintf('xyzt_%02d',t)];
+    d = dir(imfold);
+    reg = struct2cell(d);
+    ind = find(contains(reg(1,:),'z0_ch00.tif'));
+    lt = length(ind);
+    for ti = 0 :lt-1
+        if lt >= 100
+            img = loadimgs([imfold,filesep,sprintf('*_t%03d_*_ch%02d.tif',ti,ch)]);
+        elseif lt >= 10 && lt <100
+            img = loadimgs([imfold,filesep,sprintf('*_t%2d_*_ch%02d.tif',ti,ch)]);
+        elseif lt < 10 
+            img = loadimgs([imfold,filesep,sprintf('*_t%d_*ch%02d.tif',ti,ch)]);
+        end
+        
+            mip = max(img,[],3);
+      
+            count = count + 1;
+            imwrite(mip,[newfold,filesep,sprintf('talin_t%02d.tif',count)]);
+        
+        
+    end
+    
 end
+
 
     

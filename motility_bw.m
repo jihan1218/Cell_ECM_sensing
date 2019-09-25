@@ -1,17 +1,18 @@
 
 clear all 
-sample = 1;
+sample = 8;
 mode = 2;% 1: high cell density || 2: moderate cell density
 windowsize = 3; % for smoothing bw image (pixel)
 kernel = ones(windowsize)/ windowsize^2;
-cellcut =  10; % 4x: 10  10x: 
+cellcut =  100; % 4x: 10  10x: 50
 
-for time = 2:2
-    %foldname = '/home/kimji/Project/Cell_mechanics/On_site_contact_guidance/Motility/4x/s01/';
-    %foldname ='/Users/jihan/Desktop/on site contact guidance/motility/4x/s01';
-    %foldname = sprintf('/Volumes/JIhan_SSD/Cellmechanics/on site contact guidance/Motility/10x/s%02d',s);
+for time = 1:1
+    foldname = ['/media/kimji/JIhan_SSD/Cellmechanics/on site contact guidance/'...
+        'Motility/10x',filesep,sprintf('s%02d',sample)];
+    %{
     foldname = ['/Users/jihan/Documents/Cellmechanics/on site contact guidance/'...
         'Motility/4x',filesep,sprintf('s%02d',sample)];
+    %}
         
     imfold = [foldname,filesep,sprintf('xyzt_%02d',time)];
     fresult = [foldname,filesep,'result'];
@@ -54,7 +55,7 @@ for time = 2:2
     %se =strel('cube',3);
 
 
-    for st = 0: tmax-1
+    for st = 0:10 %tmax-1
         tcount = tcount + 1;
         t = st + bt;
 
