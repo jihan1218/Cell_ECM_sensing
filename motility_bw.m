@@ -1,19 +1,19 @@
 
 clear all 
 
-for sample = 1: 7
+%for sample = 1: 7
     
-%sample = 1;
+sample = 2;
 mode = 2;           % 1: corrodes bw image || 2: without corrosion
 windowsize = 3;     % for smoothing bw image (pixel)
-cellcut = 500;     % this allow to remove background 
+cellcut = 400;     % this allow to remove background 
                     % 4x: 70 / 10x: 150 / 20x: 300
                     
-%foldname = ['/media/kimji/JIhan_SSD/Cellmechanics/on site contact guidance/'...
-%        'Motility/10x',filesep,sprintf('s%02d',sample)];
+foldname = ['/media/kimji/JIhan_SSD/Cellmechanics/on site contact guidance/'...
+        'Motility/20x',filesep,sprintf('s%02d',sample)];
 
-foldname = ['/Volumes/JIhan_SSD/Cellmechanics/on site contact guidance/Motility/'...
-    '20x',filesep,sprintf('s%02d',sample)];   
+%foldname = ['/Volumes/JIhan_SSD/Cellmechanics/on site contact guidance/Motility/'...
+%    '20x',filesep,sprintf('s%02d',sample)];   
 tlim = 28;          % total 7 hours (15 min/frame)
 
 mask = loadimgs([foldname,filesep,'mask.tif']);
@@ -185,8 +185,9 @@ for time = 1:2
    end
    
 end
-clear all
 
-end
+%clear all
+
+%end
 
  
