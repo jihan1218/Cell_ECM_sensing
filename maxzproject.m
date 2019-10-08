@@ -1,17 +1,17 @@
 % max z projection
 clear all
 
-ch = 0;
-sample = 7;
-time = 1;
+ch = 1;
+sample = 2;
+time = 2;
 
 
 %foldname = ['/Volumes/JIhan_SSD/Cellmechanics/on site contact guidance/Motility/'...
 %    '10x',filesep,sprintf('s%02d',sample)];
-foldname = ['/media/kimji/JIhan_SSD/Cellmechanics/on site contact guidance/molecular/'...
-    'dynamic',filesep,sprintf('s%02d',sample)];
+foldname = ['/media/kimji/JIhan_SSD/Cellmechanics/on site contact guidance/Motility/'...
+    '20x',filesep,sprintf('s%02d',sample)];
 
-newfold = [foldname,filesep,'xyt_max'];
+newfold = [foldname,filesep,'xyt_max_bright'];
 mkdir(newfold);
 count = 0;
 
@@ -19,7 +19,7 @@ for t = 1: time
     imfold = [foldname,filesep,sprintf('xyzt_%02d',t)];
     d = dir(imfold);
     reg = struct2cell(d);
-    ind = find(contains(reg(1,:),'z0_ch00.tif'));
+    ind = find(contains(reg(1,:),'z00_ch00.tif'));
     lt = length(ind);
     for ti = 0 :lt-1
         if lt >= 100
