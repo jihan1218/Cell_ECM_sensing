@@ -3,11 +3,11 @@ clear all
 
 %for sample = 1: 7
     
-sample = 2;
+sample = 6;
 mode = 2;           % 1: corrodes bw image || 2: without corrosion
 windowsize = 3;     % for smoothing bw image (pixel)
-cellcut = 400;     % this allow to remove background 
-                    % 4x: 70 / 10x: 150 / 20x: 300
+cellcut = 500;     % this allow to remove background 
+                    % 4x: 100 / 10x: 200 / 20x: 500
                     
 foldname = ['/media/kimji/JIhan_SSD/Cellmechanics/on site contact guidance/'...
         'Motility/20x',filesep,sprintf('s%02d',sample)];
@@ -16,8 +16,8 @@ foldname = ['/media/kimji/JIhan_SSD/Cellmechanics/on site contact guidance/'...
 %    '20x',filesep,sprintf('s%02d',sample)];   
 tlim = 28;          % total 7 hours (15 min/frame)
 
-mask = loadimgs([foldname,filesep,'mask.tif']);
-mask =  double(mask);
+mask = loadimgs([foldname,filesep,'mask/*.tif']);
+mask = double(mask);
 mask(mask>0) = 1;
 
 
@@ -100,9 +100,10 @@ for time = 1:2
                 stackbw(:,:,z) = bw;
             end
             % remove regions where multiple cells are overlaped
+       
+            %stackbw = stackbw.*mask;
+            stackbw =  stackbw.*mask(:,:,tcount);
             
-            stackbw = stackbw.*mask;
-          
             cc = bwconncomp(stackbw,26);
             numPixels = cellfun(@numel, cc.PixelIdxList);
             [noncell, idx] = find(numPixels < cellcut);
