@@ -1,3 +1,9 @@
+%% calculate fiber angle based on ridge detection algorithm 
+% which discretize fibers into small segments. And the result gives us
+% coordinates of each segments. this code allows us to integrate to
+% calculate average total fiber angle and length
+
+
 clear all
 %foldname ='/Users/jihan/OneDrive/working/collagen_gradient_map/before_10x/result' ;
 foldname = ['/home/kimji/Project/Cell_mechanics/cell_ECM_sensitivity/'...
