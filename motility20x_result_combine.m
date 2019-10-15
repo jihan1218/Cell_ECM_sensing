@@ -7,7 +7,6 @@ foldmotil = ['/Volumes/JIhan_SSD/Cellmechanics/on site contact guidance/Motility
 
 switch mode
     
-    
 %% integrate all motility.mat file into one. Organize cell index
     case 1
         all = struct([]);
